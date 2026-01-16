@@ -3,9 +3,6 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { Menu, X } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 const Navbar = () => {
@@ -20,86 +17,73 @@ const Navbar = () => {
         return () => window.removeEventListener("scroll", handleScroll)
     }, [])
 
-    const navLinks = [
-        { name: "Beranda", href: "/" },
-        { name: "Profil", href: "/#profile" },
-        { name: "Program", href: "/#programs" },
-        { name: "Artikel", href: "/articles" },
-        { name: "Galeri", href: "/gallery" },
-        { name: "Kontak", href: "/#contact" }
-    ]
-
     return (
         <nav className={cn(
-            "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-            scrolled
-                ? "bg-background/80 backdrop-blur-md border-b border-border shadow-sm py-4"
-                : "bg-transparent py-6"
+            "sticky top-0 z-50 w-full transition-all duration-300 border-b border-transparent",
+            scrolled ? "bg-background-light/90 backdrop-blur-md border-gray-200" : "bg-transparent"
         )}>
-            <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-2">
-                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold">
-                        DH
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="font-bold text-lg leading-none tracking-tight">Darul Hikmah</span>
-                        <span className="text-xs text-muted-foreground">Tahfizhul Qur'an</span>
-                    </div>
-                </Link>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-center h-20">
+                    {/* Logo */}
+                    <Link href="/" className="flex items-center gap-3">
+                        <div className="size-10 bg-primary rounded-lg flex items-center justify-center text-white">
+                            <span className="material-symbols-outlined">mosque</span>
+                        </div>
+                        <div>
+                            <h1 className="text-primary text-xl font-bold font-display tracking-tight leading-none">Pesantren</h1>
+                            <h1 className="text-accent text-lg font-medium font-display tracking-tight leading-none">Al-Hikmah</h1>
+                        </div>
+                    </Link>
 
-                {/* Desktop Nav */}
-                <div className="hidden md:flex items-center gap-8">
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.name}
-                            href={link.href}
-                            className="text-sm font-medium hover:text-primary transition-colors relative group"
-                        >
-                            {link.name}
-                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+                    {/* Desktop Menu */}
+                    <div className="hidden md:flex items-center space-x-8">
+                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#hero">Beranda</Link>
+                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#profil">Profil</Link>
+                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#fasilitas">Fasilitas</Link>
+                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#berita">Berita</Link>
+                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#kontak">Kontak</Link>
+                    </div>
+
+                    {/* CTA Button */}
+                    <div className="hidden md:flex">
+                        <button className="bg-primary hover:bg-primary-dark text-white text-sm font-bold py-2.5 px-6 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+                            <span>Daftar Sekarang</span>
+                            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </button>
+                        {/* Admin Access - Hidden in new design but kept for functionality */}
+                        <Link href="/dashboard" className="ml-4 text-xs text-muted-foreground hover:text-primary pt-2">
+                            Admin
                         </Link>
-                    ))}
-                    <Button variant="default" size="sm" asChild>
-                        <Link href="/dashboard">Masuk Admin</Link>
-                    </Button>
-                </div>
+                    </div>
 
-                {/* Mobile Toggle */}
-                <button
-                    className="md:hidden p-2"
-                    onClick={() => setIsOpen(!isOpen)}
-                >
-                    {isOpen ? <X /> : <Menu />}
-                </button>
+                    {/* Mobile Menu Button */}
+                    <div className="md:hidden flex items-center">
+                        <button
+                            className="text-primary hover:text-primary-dark p-2"
+                            onClick={() => setIsOpen(!isOpen)}
+                        >
+                            <span className="material-symbols-outlined">menu</span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {/* Mobile Nav */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-background border-b border-border overflow-hidden"
-                    >
-                        <div className="flex flex-col p-4 gap-4">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.name}
-                                    href={link.href}
-                                    className="p-2 hover:bg-muted rounded-md font-medium"
-                                    onClick={() => setIsOpen(false)}
-                                >
-                                    {link.name}
-                                </Link>
-                            ))}
-                            <Button className="w-full" asChild>
-                                <Link href="/dashboard">Masuk Admin</Link>
-                            </Button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {isOpen && (
+                <div className="md:hidden bg-background-light border-b border-gray-200 p-4">
+                    <div className="flex flex-col space-y-4">
+                        <Link onClick={() => setIsOpen(false)} className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#hero">Beranda</Link>
+                        <Link onClick={() => setIsOpen(false)} className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#profil">Profil</Link>
+                        <Link onClick={() => setIsOpen(false)} className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#fasilitas">Fasilitas</Link>
+                        <Link onClick={() => setIsOpen(false)} className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#berita">Berita</Link>
+                        <Link onClick={() => setIsOpen(false)} className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#kontak">Kontak</Link>
+                        <button className="bg-primary hover:bg-primary-dark text-white text-sm font-bold py-2.5 px-6 rounded-lg w-full">
+                            Daftar Sekarang
+                        </button>
+                        <Link href="/dashboard" className="text-center text-xs text-muted-foreground">Admin Login</Link>
+                    </div>
+                </div>
+            )}
         </nav>
     )
 }

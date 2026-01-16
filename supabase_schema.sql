@@ -68,4 +68,4 @@ create policy "Images are viewable by everyone"
 
 create policy "Admins can upload images"
   on storage.objects for insert
-  using ( bucket_id = 'images' and auth.role() = 'authenticated' );
+  with check ( bucket_id = 'images' and auth.role() = 'authenticated' );
