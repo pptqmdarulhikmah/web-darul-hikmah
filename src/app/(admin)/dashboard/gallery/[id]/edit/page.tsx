@@ -8,12 +8,16 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 
-export default function UploadGalleryPage() {
+export default function EditGalleryPage() {
+    const params = useParams()
+    const id = params.id as string
+
     const [loading, setLoading] = useState(false)
+    const [fetching, setFetching] = useState(true)
     const router = useRouter()
     const supabase = createClient()
 
@@ -21,6 +25,29 @@ export default function UploadGalleryPage() {
     const [description, setDescription] = useState("")
     const [category, setCategory] = useState("Kegiatan")
     const [image_url, setImageUrl] = useState("")
+
+    useEffect(() => {
+        const fetchItem = async () => {
+            const { data, error } = await supabase
+                .from('galleries')
+                .select('*')
+                .eq('id', id)
+                .single()
+
+            if (error) {
+                alert("Gagal mengambil data: " + error.message)
+                router.push('/dashboard/gallery')
+            } else if (data) {
+                setTitle(data.title)
+                setDescription(data.description || "")
+                setCategory(data.category || "Kegiatan")
+                setImageUrl(data.image_url)
+            }
+            setFetching(false)
+        }
+
+        if (id) fetchItem()
+    }, [id, router, supabase])
 
     const handleSubmit = async () => {
         if (!title || !image_url) {
@@ -30,20 +57,27 @@ export default function UploadGalleryPage() {
 
         setLoading(true)
 
-        const { error } = await supabase.from('galleries').insert({
-            title,
-            description,
-            category,
-            image_url,
-        })
+        const { error } = await supabase
+            .from('galleries')
+            .update({
+                title,
+                description,
+                category,
+                image_url,
+            })
+            .eq('id', id)
 
         if (error) {
-            alert("Gagal menyimpan foto: " + error.message)
+            alert("Gagal memperbarui foto: " + error.message)
             setLoading(false)
         } else {
-            alert("Foto berhasil ditambahkan!")
+            alert("Foto berhasil diperbarui!")
             router.push('/dashboard/gallery')
         }
+    }
+
+    if (fetching) {
+        return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
     }
 
     return (
@@ -53,8 +87,8 @@ export default function UploadGalleryPage() {
                     <Link href="/dashboard/gallery"><ArrowLeft className="w-5 h-5" /></Link>
                 </Button>
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Upload Foto Baru</h2>
-                    <p className="text-muted-foreground">Tambahkan dokumentasi kegiatan ke galeri.</p>
+                    <h2 className="text-2xl font-bold tracking-tight">Edit Foto</h2>
+                    <p className="text-muted-foreground">Perbarui informasi foto galeri.</p>
                 </div>
             </div>
 
@@ -115,7 +149,7 @@ export default function UploadGalleryPage() {
                     </Button>
                     <Button onClick={handleSubmit} disabled={loading}>
                         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Simpan Foto
+                        Simpan Perubahan
                     </Button>
                 </div>
             </div>

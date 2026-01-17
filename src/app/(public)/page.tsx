@@ -2,8 +2,26 @@
 "use client"
 
 import Link from "next/link"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
 
 export default function Home() {
+  const [testimonials, setTestimonials] = useState<any[]>([])
+  const supabase = createClient()
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      const { data } = await supabase
+        .from('testimonials')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(2)
+
+      if (data) setTestimonials(data)
+    }
+    fetchTestimonials()
+  }, [])
+
   return (
     <>
       {/* Hero Section */}
@@ -243,34 +261,60 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <h2 className="text-3xl md:text-4xl font-display font-bold text-center mb-16">Kata Alumni &amp; Wali Santri</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-            {/* Testimonial 1 */}
-            <div className="bg-primary-dark/50 backdrop-blur-sm p-8 rounded-2xl border border-white/10 relative">
-              <span className="material-symbols-outlined absolute top-6 right-6 text-accent opacity-30 text-6xl">format_quote</span>
-              <p className="font-display text-xl md:text-2xl leading-relaxed mb-6 text-gray-100">
-                &quot;Alhamdulillah, anak saya mengalami perubahan akhlak yang sangat positif. Tidak hanya hafal Quran, tapi juga mandiri dan santun kepada orang tua.&quot;
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="size-12 rounded-full bg-gray-300 bg-cover bg-center" data-alt="Portrait of a father" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCbcoqPfraz0Hyy61uSVjfwX_IUvGXZLkqimNzoOwBVeRyU7z-hjdkusJjIkOeIQdAb_sDgqDyJocapfU0rBpL79RKEt15mvK3iLeqoWLxYcaS-etKDJAAFIE2pkjQ_y1X0qCY234ObCCkguX-3KgekU7ijwFdylJ5rb536e21TkQoAVi7Nws0bDCqMXw6SKjNrV89Pc8G4PZe7FyypEhRgGz0FoUa5DpS6CjnvCVZ9QLYSiEp4NQH8b3Zd8Fgm6rHt6xNWH_0r8NgA')" }}></div>
-                <div>
-                  <h4 className="font-bold text-white">Bapak H. Ahmad Fauzi</h4>
-                  <p className="text-sm text-accent">Wali Santri</p>
+            {testimonials.length > 0 ? (
+              testimonials.map((item) => (
+                <div key={item.id} className="bg-primary-dark/50 backdrop-blur-sm p-8 rounded-2xl border border-white/10 relative">
+                  <span className="material-symbols-outlined absolute top-6 right-6 text-accent opacity-30 text-6xl">format_quote</span>
+                  <p className="font-display text-xl md:text-2xl leading-relaxed mb-6 text-gray-100">
+                    &quot;{item.content}&quot;
+                  </p>
+                  <div className="flex items-center gap-4">
+                    {item.avatar_url ? (
+                      <div className="size-12 rounded-full bg-gray-300 bg-cover bg-center" style={{ backgroundImage: `url('${item.avatar_url}')` }}></div>
+                    ) : (
+                      <div className="size-12 rounded-full bg-gray-600 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-white">person</span>
+                      </div>
+                    )}
+                    <div>
+                      <h4 className="font-bold text-white">{item.name}</h4>
+                      <p className="text-sm text-accent">{item.role}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            {/* Testimonial 2 */}
-            <div className="bg-primary-dark/50 backdrop-blur-sm p-8 rounded-2xl border border-white/10 relative">
-              <span className="material-symbols-outlined absolute top-6 right-6 text-accent opacity-30 text-6xl">format_quote</span>
-              <p className="font-display text-xl md:text-2xl leading-relaxed mb-6 text-gray-100">
-                &quot;Pondok ini mengajarkan saya keseimbangan antara ilmu agama dan umum. Fasilitasnya sangat mendukung untuk mengembangkan potensi diri.&quot;
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="size-12 rounded-full bg-gray-300 bg-cover bg-center" data-alt="Portrait of a young male graduate" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBHHIjdYihb6ASkpmQburKGY1wvWB1hWpl-LMfDbQIvzEHBJgBpGN6pgvaBBJCGS9YIAUyIe8amvAEhhGNZl1N5f19EeORjyh3UvEdVqyolVdSO1p1WG3H-mcHf2PGaMNODR7DtNFftCmPW13LWLPiuG4EaphYS1zgj5BhECIjA3GRbxG9fESMs7wSa5hbyfuGHYnubApq6Iva7YofVouPdBC-4rDdqCy7bBeRZZImlv1MbsInIrKRB9lJDNLzyCEsDGSmMyeW2eVdh')" }}></div>
-                <div>
-                  <h4 className="font-bold text-white">Muhammad Rizky, S.T.</h4>
-                  <p className="text-sm text-accent">Alumni Angkatan 2018</p>
+              ))
+            ) : (
+              <>
+                {/* Testimonial 1 Placeholder */}
+                <div className="bg-primary-dark/50 backdrop-blur-sm p-8 rounded-2xl border border-white/10 relative">
+                  <span className="material-symbols-outlined absolute top-6 right-6 text-accent opacity-30 text-6xl">format_quote</span>
+                  <p className="font-display text-xl md:text-2xl leading-relaxed mb-6 text-gray-100">
+                    &quot;Alhamdulillah, anak saya mengalami perubahan akhlak yang sangat positif. Tidak hanya hafal Quran, tapi juga mandiri dan santun kepada orang tua.&quot;
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="size-12 rounded-full bg-gray-300 bg-cover bg-center" data-alt="Portrait of a father" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCbcoqPfraz0Hyy61uSVjfwX_IUvGXZLkqimNzoOwBVeRyU7z-hjdkusJjIkOeIQdAb_sDgqDyJocapfU0rBpL79RKEt15mvK3iLeqoWLxYcaS-etKDJAAFIE2pkjQ_y1X0qCY234ObCCkguX-3KgekU7ijwFdylJ5rb536e21TkQoAVi7Nws0bDCqMXw6SKjNrV89Pc8G4PZe7FyypEhRgGz0FoUa5DpS6CjnvCVZ9QLYSiEp4NQH8b3Zd8Fgm6rHt6xNWH_0r8NgA')" }}></div>
+                    <div>
+                      <h4 className="font-bold text-white">Bapak H. Ahmad Fauzi</h4>
+                      <p className="text-sm text-accent">Wali Santri</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+                {/* Testimonial 2 Placeholder */}
+                <div className="bg-primary-dark/50 backdrop-blur-sm p-8 rounded-2xl border border-white/10 relative">
+                  <span className="material-symbols-outlined absolute top-6 right-6 text-accent opacity-30 text-6xl">format_quote</span>
+                  <p className="font-display text-xl md:text-2xl leading-relaxed mb-6 text-gray-100">
+                    &quot;Pondok ini mengajarkan saya keseimbangan antara ilmu agama dan umum. Fasilitasnya sangat mendukung untuk mengembangkan potensi diri.&quot;
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="size-12 rounded-full bg-gray-300 bg-cover bg-center" data-alt="Portrait of a young male graduate" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBHHIjdYihb6ASkpmQburKGY1wvWB1hWpl-LMfDbQIvzEHBJgBpGN6pgvaBBJCGS9YIAUyIe8amvAEhhGNZl1N5f19EeORjyh3UvEdVqyolVdSO1p1WG3H-mcHf2PGaMNODR7DtNFftCmPW13LWLPiuG4EaphYS1zgj5BhECIjA3GRbxG9fESMs7wSa5hbyfuGHYnubApq6Iva7YofVouPdBC-4rDdqCy7bBeRZZImlv1MbsInIrKRB9lJDNLzyCEsDGSmMyeW2eVdh')" }}></div>
+                    <div>
+                      <h4 className="font-bold text-white">Muhammad Rizky, S.T.</h4>
+                      <p className="text-sm text-accent">Alumni Angkatan 2018</p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>

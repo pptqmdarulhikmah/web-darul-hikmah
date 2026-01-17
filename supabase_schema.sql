@@ -10,7 +10,11 @@ create table if not exists articles (
   is_published boolean default false,
   published_at timestamp with time zone,
   created_at timestamp with time zone default now(),
-  updated_at timestamp with time zone default now()
+  updated_at timestamp with time zone default now(),
+  -- SEO Fields
+  seo_title text,
+  seo_description text,
+  seo_keywords text
 );
 
 -- Galleries Table
@@ -20,6 +24,16 @@ create table if not exists galleries (
   description text,
   image_url text not null,
   category text, -- e.g., 'Kegiatan', 'Fasilitas'
+  created_at timestamp with time zone default now()
+);
+
+-- Testimonials Table
+create table if not exists testimonials (
+  id uuid default gen_random_uuid() primary key,
+  name text not null,
+  role text not null,
+  content text not null,
+  avatar_url text,
   created_at timestamp with time zone default now()
 );
 

@@ -7,10 +7,10 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { Switch } from "@/components/ui/switch"
 
 function Tabs({ children }: { children: React.ReactNode }) {
@@ -25,17 +25,22 @@ function TabsTrigger({ active, onClick, children }: { active: boolean; onClick: 
     return (
         <button
             onClick={onClick}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
         >
             {children}
         </button>
     )
 }
 
-export default function CreateArticlePage() {
+export default function EditArticlePage() {
+    const params = useParams()
+    const id = params.id as string
+    
     const [activeTab, setActiveTab] = useState<"content" | "seo">("content")
     const [loading, setLoading] = useState(false)
+    const [fetching, setFetching] = useState(true)
     const router = useRouter()
     const supabase = createClient()
 
@@ -45,11 +50,38 @@ export default function CreateArticlePage() {
     const [image_url, setImageUrl] = useState("")
     const [slug, setSlug] = useState("")
     const [is_published, setIsPublished] = useState(false)
-
+    
     // SEO States
     const [seo_title, setSeoTitle] = useState("")
     const [seo_description, setSeoDescription] = useState("")
     const [seo_keywords, setSeoKeywords] = useState("")
+
+    useEffect(() => {
+        const fetchArticle = async () => {
+            const { data, error } = await supabase
+                .from('articles')
+                .select('*')
+                .eq('id', id)
+                .single()
+            
+            if (error) {
+                alert("Gagal mengambil data artikel: " + error.message)
+                router.push('/dashboard/articles')
+            } else if (data) {
+                setTitle(data.title)
+                setContent(data.content)
+                setImageUrl(data.image_url || "")
+                setSlug(data.slug)
+                setIsPublished(data.is_published)
+                setSeoTitle(data.seo_title || "")
+                setSeoDescription(data.seo_description || "")
+                setSeoKeywords(data.seo_keywords || "")
+            }
+            setFetching(false)
+        }
+
+        if (id) fetchArticle()
+    }, [id, router, supabase])
 
     const generateSlug = (text: string) => {
         return text
@@ -60,15 +92,6 @@ export default function CreateArticlePage() {
             .trim()
     }
 
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newTitle = e.target.value
-        setTitle(newTitle)
-        // Auto-generate slug if slug is empty or matches previous title slug
-        if (!slug || slug === generateSlug(title)) {
-            setSlug(generateSlug(newTitle))
-        }
-    }
-
     const handleSubmit = async () => {
         if (!title || !content || !slug) {
             alert("Judul, Slug, dan Konten harus diisi!")
@@ -77,25 +100,32 @@ export default function CreateArticlePage() {
 
         setLoading(true)
 
-        const { error } = await supabase.from('articles').insert({
-            title,
-            slug,
-            content,
-            image_url,
-            is_published,
-            seo_title,
-            seo_description,
-            seo_keywords,
-            published_at: is_published ? new Date().toISOString() : null
-        })
+        const { error } = await supabase
+            .from('articles')
+            .update({
+                title,
+                slug,
+                content,
+                image_url,
+                is_published,
+                seo_title,
+                seo_description,
+                seo_keywords,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', id)
 
         if (error) {
-            alert("Gagal menyimpan artikel: " + error.message)
+            alert("Gagal memperbarui artikel: " + error.message)
             setLoading(false)
         } else {
-            alert("Artikel berhasil disimpan!")
+            alert("Artikel berhasil diperbarui!")
             router.push('/dashboard/articles')
         }
+    }
+
+    if (fetching) {
+        return <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
     }
 
     return (
@@ -105,8 +135,8 @@ export default function CreateArticlePage() {
                     <Link href="/dashboard/articles"><ArrowLeft className="w-5 h-5" /></Link>
                 </Button>
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Buat Artikel Baru</h2>
-                    <p className="text-muted-foreground">Tulis artikel atau berita terbaru.</p>
+                    <h2 className="text-2xl font-bold tracking-tight">Edit Artikel</h2>
+                    <p className="text-muted-foreground">Perbarui konten artikel ini.</p>
                 </div>
             </div>
 
@@ -132,19 +162,19 @@ export default function CreateArticlePage() {
                     <div className={activeTab === "content" ? "space-y-4" : "hidden"}>
                         <div className="space-y-2">
                             <Label htmlFor="title">Judul Artikel <span className="text-red-500">*</span></Label>
-                            <Input
-                                id="title"
-                                placeholder="Masukkan judul..."
+                            <Input 
+                                id="title" 
+                                placeholder="Masukkan judul..." 
                                 value={title}
-                                onChange={handleTitleChange}
+                                onChange={(e) => setTitle(e.target.value)}
                             />
                         </div>
-
+                        
                         <div className="space-y-2">
                             <Label htmlFor="image">Gambar Utama (URL)</Label>
-                            <Input
-                                id="image"
-                                placeholder="https://..."
+                            <Input 
+                                id="image" 
+                                placeholder="https://..." 
                                 value={image_url}
                                 onChange={(e) => setImageUrl(e.target.value)}
                             />
@@ -157,10 +187,10 @@ export default function CreateArticlePage() {
 
                         <div className="space-y-2">
                             <Label>Konten <span className="text-red-500">*</span></Label>
-                            <RichTextEditor
-                                value={content}
-                                onChange={setContent}
-                                placeholder="Mulai tulis artikel anda disini..."
+                            <RichTextEditor 
+                                value={content} 
+                                onChange={setContent} 
+                                placeholder="Mulai tulis artikel anda disini..." 
                             />
                         </div>
                     </div>
@@ -170,9 +200,9 @@ export default function CreateArticlePage() {
                             <Label htmlFor="slug">Slug (URL) <span className="text-red-500">*</span></Label>
                             <div className="flex items-center gap-2 text-muted-foreground text-sm">
                                 <span>.../articles/</span>
-                                <Input
-                                    id="slug"
-                                    placeholder="judul-artikel-anda"
+                                <Input 
+                                    id="slug" 
+                                    placeholder="judul-artikel-anda" 
                                     className="flex-1"
                                     value={slug}
                                     onChange={(e) => setSlug(e.target.value)}
@@ -183,9 +213,9 @@ export default function CreateArticlePage() {
 
                         <div className="space-y-2">
                             <Label htmlFor="seo_title">SEO Title (Meta Title)</Label>
-                            <Input
-                                id="seo_title"
-                                placeholder="Judul yang tampil di Google..."
+                            <Input 
+                                id="seo_title" 
+                                placeholder="Judul yang tampil di Google..." 
                                 value={seo_title}
                                 onChange={(e) => setSeoTitle(e.target.value)}
                             />
@@ -194,9 +224,9 @@ export default function CreateArticlePage() {
 
                         <div className="space-y-2">
                             <Label htmlFor="seo_description">Meta Description</Label>
-                            <Textarea
-                                id="seo_description"
-                                placeholder="Deskripsi singkat untuk hasil pencarian..."
+                            <Textarea 
+                                id="seo_description" 
+                                placeholder="Deskripsi singkat untuk hasil pencarian..." 
                                 value={seo_description}
                                 onChange={(e) => setSeoDescription(e.target.value)}
                             />
@@ -205,9 +235,9 @@ export default function CreateArticlePage() {
 
                         <div className="space-y-2">
                             <Label htmlFor="seo_keywords">Keywords</Label>
-                            <Input
-                                id="seo_keywords"
-                                placeholder="pendidikan, pesantren, tahfidz..."
+                            <Input 
+                                id="seo_keywords" 
+                                placeholder="pendidikan, pesantren, tahfidz..." 
                                 value={seo_keywords}
                                 onChange={(e) => setSeoKeywords(e.target.value)}
                             />
@@ -222,7 +252,7 @@ export default function CreateArticlePage() {
                     </Button>
                     <Button onClick={handleSubmit} disabled={loading}>
                         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Simpan Artikel
+                        Simpan Perubahan
                     </Button>
                 </div>
             </div>

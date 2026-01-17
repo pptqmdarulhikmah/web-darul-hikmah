@@ -30,8 +30,7 @@ const Navbar = () => {
                             <span className="material-symbols-outlined">mosque</span>
                         </div>
                         <div>
-                            <h1 className="text-primary text-xl font-bold font-display tracking-tight leading-none">Pesantren</h1>
-                            <h1 className="text-accent text-lg font-medium font-display tracking-tight leading-none">Al-Hikmah</h1>
+                            <h1 className="flex flex-col text-primary text-xl font-bold font-display tracking-tight leading-none">Pesantren<span className="text-accent text-lg font-medium font-display tracking-tight leading-none">Al-Hikmah</span></h1>
                         </div>
                     </Link>
 
@@ -40,7 +39,7 @@ const Navbar = () => {
                         <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#hero">Beranda</Link>
                         <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#profil">Profil</Link>
                         <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#fasilitas">Fasilitas</Link>
-                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#berita">Berita</Link>
+                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/articles">Berita</Link>
                         <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#kontak">Kontak</Link>
                     </div>
 

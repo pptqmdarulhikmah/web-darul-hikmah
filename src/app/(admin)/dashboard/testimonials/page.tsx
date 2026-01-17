@@ -10,70 +10,68 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { Edit, Plus, Trash2 } from "lucide-react"
-import { format } from "date-fns"
-import { id as idLocale } from "date-fns/locale"
+import { Edit, Plus, Trash2, User } from "lucide-react"
 
-interface Article {
+interface Testimonial {
     id: string
-    title: string
-    is_published: boolean
+    name: string
+    role: string
+    content: string
+    avatar_url: string
     created_at: string
-    seo_keywords: string
 }
 
-export default function ArticlesPage() {
-    const [articles, setArticles] = useState<Article[]>([])
+export default function TestimonialsPage() {
+    const [testimonials, setTestimonials] = useState<Testimonial[]>([])
     const [loading, setLoading] = useState(true)
     const supabase = createClient()
 
-    const fetchArticles = async () => {
+    const fetchTestimonials = async () => {
         setLoading(true)
         const { data, error } = await supabase
-            .from('articles')
+            .from('testimonials')
             .select('*')
             .order('created_at', { ascending: false })
 
         if (error) {
-            alert('Gagal mengambil data artikel: ' + error.message)
+            alert('Gagal mengambil data testimoni: ' + error.message)
         } else {
-            setArticles(data || [])
+            setTestimonials(data || [])
         }
         setLoading(false)
     }
 
-    const deleteArticle = async (id: string) => {
-        if (!confirm('Apakah anda yakin ingin menghapus artikel ini?')) return
+    const deleteTestimonial = async (id: string) => {
+        if (!confirm('Apakah anda yakin ingin menghapus testimoni ini?')) return
 
         const { error } = await supabase
-            .from('articles')
+            .from('testimonials')
             .delete()
             .eq('id', id)
 
         if (error) {
-            alert('Gagal menghapus artikel: ' + error.message)
+            alert('Gagal menghapus testimoni: ' + error.message)
         } else {
-            fetchArticles()
+            fetchTestimonials()
         }
     }
 
     useEffect(() => {
-        fetchArticles()
+        fetchTestimonials()
     }, [])
 
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Artikel</h2>
-                    <p className="text-muted-foreground">Kelola artikel dan berita pesantren.</p>
+                    <h2 className="text-2xl font-bold tracking-tight">Testimoni</h2>
+                    <p className="text-muted-foreground">Kelola ulasan dari santri atau wali santri.</p>
                 </div>
                 <Button asChild>
-                    <Link href="/dashboard/articles/create"><Plus className="mr-2 h-4 w-4" /> Artikel Baru</Link>
+                    <Link href="/dashboard/testimonials/create"><Plus className="mr-2 h-4 w-4" /> Testimoni Baru</Link>
                 </Button>
             </div>
 
@@ -81,9 +79,9 @@ export default function ArticlesPage() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Judul</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Tanggal Dibuat</TableHead>
+                            <TableHead>Nama</TableHead>
+                            <TableHead>Peran</TableHead>
+                            <TableHead>Konten</TableHead>
                             <TableHead className="text-right">Aksi</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -94,39 +92,35 @@ export default function ArticlesPage() {
                                     Memuat data...
                                 </TableCell>
                             </TableRow>
-                        ) : articles.length === 0 ? (
+                        ) : testimonials.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                                    Belum ada artikel.
+                                    Belum ada testimoni.
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            articles.map((article) => (
-                                <TableRow key={article.id}>
-                                    <TableCell className="font-medium">
-                                        {article.title}
-                                        {article.seo_keywords && (
-                                            <div className="text-xs text-muted-foreground mt-1 truncate max-w-[300px]">
-                                                {article.seo_keywords}
+                            testimonials.map((item) => (
+                                <TableRow key={item.id}>
+                                    <TableCell className="font-medium flex items-center gap-2">
+                                        {item.avatar_url ? (
+                                            <img src={item.avatar_url} alt={item.name} className="w-8 h-8 rounded-full object-cover" />
+                                        ) : (
+                                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                                                <User className="w-4 h-4 text-muted-foreground" />
                                             </div>
                                         )}
+                                        {item.name}
                                     </TableCell>
-                                    <TableCell>
-                                        <Badge variant={article.is_published ? "default" : "secondary"}>
-                                            {article.is_published ? "Terbit" : "Draft"}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        {format(new Date(article.created_at), "d MMMM yyyy", { locale: idLocale })}
-                                    </TableCell>
+                                    <TableCell>{item.role}</TableCell>
+                                    <TableCell className="max-w-[400px] truncate">{item.content}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button variant="ghost" size="icon" asChild>
-                                                <Link href={`/dashboard/articles/${article.id}/edit`}>
+                                                <Link href={`/dashboard/testimonials/${item.id}/edit`}>
                                                     <Edit className="h-4 w-4 text-blue-500" />
                                                 </Link>
                                             </Button>
-                                            <Button variant="ghost" size="icon" onClick={() => deleteArticle(article.id)}>
+                                            <Button variant="ghost" size="icon" onClick={() => deleteTestimonial(item.id)}>
                                                 <Trash2 className="h-4 w-4 text-red-500" />
                                             </Button>
                                         </div>
