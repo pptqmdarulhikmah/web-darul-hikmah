@@ -8,9 +8,9 @@
   --color-foreground: var(--foreground);
 
   /* Al-Hikmah Theme Colors */
-  --color-primary: #3d5c5b;
-  --color-primary-light: #547a79;
-  --color-primary-dark: #2a403f;
+  --color-primary: #000062;
+  --color-primary-light: #333385;
+  --color-primary-dark: #000040;
   --color-accent: #B5925A;
   --color-background-light: #f9f8f6;
   --color-background-dark: #171b1b;
@@ -63,7 +63,7 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
 
-  --image-islamic-pattern: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233d5c5b' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  --image-islamic-pattern: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000062' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
 :root {
@@ -78,11 +78,11 @@
   --popover: #ffffff;
   --popover-foreground: #171b1b;
 
-  --primary: #3d5c5b;
+  --primary: #000062;
   --primary-foreground: #ffffff;
 
   --secondary: #f9f8f6;
-  --secondary-foreground: #3d5c5b;
+  --secondary-foreground: #000062;
 
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
@@ -94,7 +94,7 @@
 
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #3d5c5b;
+  --ring: #000062;
 
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -122,7 +122,7 @@
   --popover: #1c2121;
   --popover-foreground: #f9f8f6;
 
-  --primary: #3d5c5b;
+  --primary: #000062;
   --primary-foreground: #ffffff;
 
   --secondary: #2a403f;
@@ -147,12 +147,12 @@
 
   --sidebar: #1c2121;
   --sidebar-foreground: #f9f8f6;
-  --sidebar-primary: #3d5c5b;
+  --sidebar-primary: #000062;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #2a403f;
   --sidebar-accent-foreground: #f9f8f6;
   --sidebar-border: #2a403f;
-  --sidebar-ring: #3d5c5b;
+  --sidebar-ring: #000062;
 }
 
 @layer base {

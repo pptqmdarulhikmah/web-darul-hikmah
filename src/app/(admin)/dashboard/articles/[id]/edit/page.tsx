@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -25,9 +26,8 @@ function TabsTrigger({ active, onClick, children }: { active: boolean; onClick: 
     return (
         <button
             onClick={onClick}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${active ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
         >
             {children}
         </button>
@@ -37,7 +37,7 @@ function TabsTrigger({ active, onClick, children }: { active: boolean; onClick: 
 export default function EditArticlePage() {
     const params = useParams()
     const id = params.id as string
-    
+
     const [activeTab, setActiveTab] = useState<"content" | "seo">("content")
     const [loading, setLoading] = useState(false)
     const [fetching, setFetching] = useState(true)
@@ -46,11 +46,12 @@ export default function EditArticlePage() {
 
     // Form States
     const [title, setTitle] = useState("")
+    const [category, setCategory] = useState("Berita")
     const [content, setContent] = useState("")
     const [image_url, setImageUrl] = useState("")
     const [slug, setSlug] = useState("")
     const [is_published, setIsPublished] = useState(false)
-    
+
     // SEO States
     const [seo_title, setSeoTitle] = useState("")
     const [seo_description, setSeoDescription] = useState("")
@@ -63,12 +64,13 @@ export default function EditArticlePage() {
                 .select('*')
                 .eq('id', id)
                 .single()
-            
+
             if (error) {
                 alert("Gagal mengambil data artikel: " + error.message)
                 router.push('/dashboard/articles')
             } else if (data) {
                 setTitle(data.title)
+                setCategory(data.category || "Berita")
                 setContent(data.content)
                 setImageUrl(data.image_url || "")
                 setSlug(data.slug)
@@ -105,6 +107,7 @@ export default function EditArticlePage() {
             .update({
                 title,
                 slug,
+                category,
                 content,
                 image_url,
                 is_published,
@@ -162,19 +165,34 @@ export default function EditArticlePage() {
                     <div className={activeTab === "content" ? "space-y-4" : "hidden"}>
                         <div className="space-y-2">
                             <Label htmlFor="title">Judul Artikel <span className="text-red-500">*</span></Label>
-                            <Input 
-                                id="title" 
-                                placeholder="Masukkan judul..." 
+                            <Input
+                                id="title"
+                                placeholder="Masukkan judul..."
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                             />
                         </div>
-                        
+
+                        <div className="space-y-2">
+                            <Label htmlFor="category">Kategori</Label>
+                            <Select value={category} onValueChange={setCategory}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Pilih kategori" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Berita">Berita</SelectItem>
+                                    <SelectItem value="Artikel">Artikel Islami</SelectItem>
+                                    <SelectItem value="Pengumuman">Pengumuman</SelectItem>
+                                    <SelectItem value="Kegiatan">Laporan Kegiatan</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="image">Gambar Utama (URL)</Label>
-                            <Input 
-                                id="image" 
-                                placeholder="https://..." 
+                            <Input
+                                id="image"
+                                placeholder="https://..."
                                 value={image_url}
                                 onChange={(e) => setImageUrl(e.target.value)}
                             />
@@ -187,10 +205,10 @@ export default function EditArticlePage() {
 
                         <div className="space-y-2">
                             <Label>Konten <span className="text-red-500">*</span></Label>
-                            <RichTextEditor 
-                                value={content} 
-                                onChange={setContent} 
-                                placeholder="Mulai tulis artikel anda disini..." 
+                            <RichTextEditor
+                                value={content}
+                                onChange={setContent}
+                                placeholder="Mulai tulis artikel anda disini..."
                             />
                         </div>
                     </div>
@@ -200,9 +218,9 @@ export default function EditArticlePage() {
                             <Label htmlFor="slug">Slug (URL) <span className="text-red-500">*</span></Label>
                             <div className="flex items-center gap-2 text-muted-foreground text-sm">
                                 <span>.../articles/</span>
-                                <Input 
-                                    id="slug" 
-                                    placeholder="judul-artikel-anda" 
+                                <Input
+                                    id="slug"
+                                    placeholder="judul-artikel-anda"
                                     className="flex-1"
                                     value={slug}
                                     onChange={(e) => setSlug(e.target.value)}
@@ -213,9 +231,9 @@ export default function EditArticlePage() {
 
                         <div className="space-y-2">
                             <Label htmlFor="seo_title">SEO Title (Meta Title)</Label>
-                            <Input 
-                                id="seo_title" 
-                                placeholder="Judul yang tampil di Google..." 
+                            <Input
+                                id="seo_title"
+                                placeholder="Judul yang tampil di Google..."
                                 value={seo_title}
                                 onChange={(e) => setSeoTitle(e.target.value)}
                             />
@@ -224,9 +242,9 @@ export default function EditArticlePage() {
 
                         <div className="space-y-2">
                             <Label htmlFor="seo_description">Meta Description</Label>
-                            <Textarea 
-                                id="seo_description" 
-                                placeholder="Deskripsi singkat untuk hasil pencarian..." 
+                            <Textarea
+                                id="seo_description"
+                                placeholder="Deskripsi singkat untuk hasil pencarian..."
                                 value={seo_description}
                                 onChange={(e) => setSeoDescription(e.target.value)}
                             />
@@ -235,9 +253,9 @@ export default function EditArticlePage() {
 
                         <div className="space-y-2">
                             <Label htmlFor="seo_keywords">Keywords</Label>
-                            <Input 
-                                id="seo_keywords" 
-                                placeholder="pendidikan, pesantren, tahfidz..." 
+                            <Input
+                                id="seo_keywords"
+                                placeholder="pendidikan, pesantren, tahfidz..."
                                 value={seo_keywords}
                                 onChange={(e) => setSeoKeywords(e.target.value)}
                             />

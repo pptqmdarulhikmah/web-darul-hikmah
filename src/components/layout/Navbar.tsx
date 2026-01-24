@@ -4,6 +4,7 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false)
@@ -26,11 +27,9 @@ const Navbar = () => {
                 <div className="flex justify-between items-center h-20">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-3">
-                        <div className="size-10 bg-primary rounded-lg flex items-center justify-center text-white">
-                            <span className="material-symbols-outlined">mosque</span>
-                        </div>
+                        <Image src="/logo_horizontal.webp" alt="Logo" width={200} height={100} />
                         <div>
-                            <h1 className="flex flex-col text-primary text-xl font-bold font-display tracking-tight leading-none">Pesantren<span className="text-accent text-lg font-medium font-display tracking-tight leading-none">Al-Hikmah</span></h1>
+                            <h1 className="flex flex-col text-transparent text-xs font-bold font-display tracking-tight leading-none">Pesantren<span className="text-xs font-medium font-display tracking-tight leading-none">Al-Hikmah</span></h1>
                         </div>
                     </Link>
 
@@ -49,10 +48,6 @@ const Navbar = () => {
                             <span>Daftar Sekarang</span>
                             <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                         </button>
-                        {/* Admin Access - Hidden in new design but kept for functionality */}
-                        <Link href="/dashboard" className="ml-4 text-xs text-muted-foreground hover:text-primary pt-2">
-                            Admin
-                        </Link>
                     </div>
 
                     {/* Mobile Menu Button */}

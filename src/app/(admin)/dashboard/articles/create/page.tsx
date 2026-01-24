@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
@@ -41,6 +42,7 @@ export default function CreateArticlePage() {
 
     // Form States
     const [title, setTitle] = useState("")
+    const [category, setCategory] = useState("Berita")
     const [content, setContent] = useState("")
     const [image_url, setImageUrl] = useState("")
     const [slug, setSlug] = useState("")
@@ -80,6 +82,7 @@ export default function CreateArticlePage() {
         const { error } = await supabase.from('articles').insert({
             title,
             slug,
+            category,
             content,
             image_url,
             is_published,
@@ -138,6 +141,21 @@ export default function CreateArticlePage() {
                                 value={title}
                                 onChange={handleTitleChange}
                             />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="category">Kategori</Label>
+                            <Select value={category} onValueChange={setCategory}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Pilih kategori" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Berita">Berita</SelectItem>
+                                    <SelectItem value="Artikel">Artikel Islami</SelectItem>
+                                    <SelectItem value="Pengumuman">Pengumuman</SelectItem>
+                                    <SelectItem value="Kegiatan">Laporan Kegiatan</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
 
                         <div className="space-y-2">

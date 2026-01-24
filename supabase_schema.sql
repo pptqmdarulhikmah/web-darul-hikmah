@@ -4,6 +4,7 @@ create table if not exists articles (
   id uuid default gen_random_uuid() primary key,
   title text not null,
   slug text not null unique,
+  category text default 'Berita',
   content text not null,
   excerpt text,
   image_url text,
