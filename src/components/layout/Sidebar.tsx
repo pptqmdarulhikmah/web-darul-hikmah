@@ -3,7 +3,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, FileText, Image as ImageIcon, Settings, LogOut } from "lucide-react"
+import { LayoutDashboard, FileText, Image as ImageIcon, Settings, LogOut, Megaphone } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const Sidebar = () => {
@@ -13,6 +13,7 @@ const Sidebar = () => {
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Artikel", href: "/dashboard/articles", icon: FileText },
         { name: "Galeri", href: "/dashboard/gallery", icon: ImageIcon },
+        { name: "Hero Section", href: "/dashboard/hero", icon: Megaphone },
         { name: "Testimoni", href: "/dashboard/testimonials", icon: FileText },
         { name: "Pengaturan", href: "/dashboard/settings", icon: Settings },
     ]

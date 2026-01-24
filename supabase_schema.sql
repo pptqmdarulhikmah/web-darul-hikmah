@@ -84,3 +84,29 @@ create policy "Images are viewable by everyone"
 create policy "Admins can upload images"
   on storage.objects for insert
   with check ( bucket_id = 'images' and auth.role() = 'authenticated' );
+
+-- Hero Slides Table
+create table if not exists hero_slides (
+  id uuid default gen_random_uuid() primary key,
+  title text,
+  subtitle text,
+  image_url text not null,
+  button_text text,
+  button_link text,
+  sort_order integer default 0,
+  is_active boolean default true,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now()
+);
+
+-- Enable RLS for Hero Slides
+alter table hero_slides enable row level security;
+
+-- Policies for Hero Slides
+create policy "Public hero slides are viewable by everyone"
+  on hero_slides for select
+  using (is_active = true);
+
+create policy "Admins can do everything on hero slides"
+  on hero_slides for all
+  using (auth.role() = 'authenticated');
