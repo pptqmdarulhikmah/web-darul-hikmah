@@ -53,37 +53,40 @@ alter table articles enable row level security;
 alter table galleries enable row level security;
 
 -- Policies (Public read, Admin write)
-create policy "Public articles are viewable by everyone"
-  on articles for select
-  using (is_published = true);
+do $$ 
+begin
+  if not exists (select from pg_policies where policyname = 'Public articles are viewable by everyone' and tablename = 'articles') then
+    create policy "Public articles are viewable by everyone" on articles for select using (is_published = true);
+  end if;
 
-create policy "Public galleries are viewable by everyone"
-  on galleries for select
-  using (true);
+  if not exists (select from pg_policies where policyname = 'Public galleries are viewable by everyone' and tablename = 'galleries') then
+    create policy "Public galleries are viewable by everyone" on galleries for select using (true);
+  end if;
 
--- Note: Admin policies would depend on auth setup. 
--- For now, we assume authenticated users (admins) can do everything, 
--- or we add a specific role check.
-create policy "Admins can do everything on articles"
-  on articles for all
-  using (auth.role() = 'authenticated'); -- Simplified for this stage
+  if not exists (select from pg_policies where policyname = 'Admins can do everything on articles' and tablename = 'articles') then
+    create policy "Admins can do everything on articles" on articles for all using (auth.role() = 'authenticated');
+  end if;
 
-create policy "Admins can do everything on galleries"
-  on galleries for all
-  using (auth.role() = 'authenticated');
+  if not exists (select from pg_policies where policyname = 'Admins can do everything on galleries' and tablename = 'galleries') then
+    create policy "Admins can do everything on galleries" on galleries for all using (auth.role() = 'authenticated');
+  end if;
+end $$;
 
 -- Storage Buckets
 insert into storage.buckets (id, name, public) 
 values ('images', 'images', true)
 on conflict (id) do nothing;
 
-create policy "Images are viewable by everyone"
-  on storage.objects for select
-  using ( bucket_id = 'images' );
+do $$
+begin
+  if not exists (select from pg_policies where policyname = 'Images are viewable by everyone' and tablename = 'objects') then
+    create policy "Images are viewable by everyone" on storage.objects for select using ( bucket_id = 'images' );
+  end if;
 
-create policy "Admins can upload images"
-  on storage.objects for insert
-  with check ( bucket_id = 'images' and auth.role() = 'authenticated' );
+  if not exists (select from pg_policies where policyname = 'Admins can upload images' and tablename = 'objects') then
+    create policy "Admins can upload images" on storage.objects for insert with check ( bucket_id = 'images' and auth.role() = 'authenticated' );
+  end if;
+end $$;
 
 -- Hero Slides Table
 create table if not exists hero_slides (
@@ -103,10 +106,13 @@ create table if not exists hero_slides (
 alter table hero_slides enable row level security;
 
 -- Policies for Hero Slides
-create policy "Public hero slides are viewable by everyone"
-  on hero_slides for select
-  using (is_active = true);
+do $$
+begin
+  if not exists (select from pg_policies where policyname = 'Public hero slides are viewable by everyone' and tablename = 'hero_slides') then
+    create policy "Public hero slides are viewable by everyone" on hero_slides for select using (is_active = true);
+  end if;
 
-create policy "Admins can do everything on hero slides"
-  on hero_slides for all
-  using (auth.role() = 'authenticated');
+  if not exists (select from pg_policies where policyname = 'Admins can do everything on hero slides' and tablename = 'hero_slides') then
+    create policy "Admins can do everything on hero slides" on hero_slides for all using (auth.role() = 'authenticated');
+  end if;
+end $$;
