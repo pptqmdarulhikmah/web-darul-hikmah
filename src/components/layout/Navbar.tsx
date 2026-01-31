@@ -35,11 +35,10 @@ const Navbar = () => {
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-8">
-                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#hero">Beranda</Link>
-                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#profil">Profil</Link>
-                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#fasilitas">Fasilitas</Link>
+                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/">Beranda</Link>
+                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/psb">PPDB</Link>
                         <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/articles">Berita</Link>
-                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#kontak">Kontak</Link>
+                        <Link className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/donation">Donasi</Link>
                     </div>
 
                     {/* CTA Button */}
@@ -70,6 +69,7 @@ const Navbar = () => {
                         <Link onClick={() => setIsOpen(false)} className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#profil">Profil</Link>
                         <Link onClick={() => setIsOpen(false)} className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#fasilitas">Fasilitas</Link>
                         <Link onClick={() => setIsOpen(false)} className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#berita">Berita</Link>
+                        <Link onClick={() => setIsOpen(false)} className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/donation">Donasi</Link>
                         <Link onClick={() => setIsOpen(false)} className="text-slate-600 hover:text-primary font-medium text-sm transition-colors" href="/#kontak">Kontak</Link>
                         <button className="bg-primary hover:bg-primary-dark text-white text-sm font-bold py-2.5 px-6 rounded-lg w-full">
                             Daftar Sekarang

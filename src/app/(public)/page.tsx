@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client"
 import { format } from "date-fns"
 import { id } from "date-fns/locale"
 import HeroCarousel from "@/components/home/HeroCarousel"
+import WhatsappButton from "@/components/layout/WhatsappButton"
 
 export default function Home() {
   const [testimonials, setTestimonials] = useState<any[]>([])
@@ -281,6 +282,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <WhatsappButton />
     </>
   )
 }
